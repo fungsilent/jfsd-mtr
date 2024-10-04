@@ -99,6 +99,8 @@ function main() {
 }
 
 async function selectLine(event, fetchApiFunc) {
+    document.querySelector('.tips').classList.remove('hide')
+
     const lineElem = event.currentTarget
     const lineCode = lineElem.dataset.lineCode  // get data-line-name value
     const line = mtrLines[lineCode] // line object

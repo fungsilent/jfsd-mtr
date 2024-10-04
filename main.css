@@ -41,6 +41,10 @@ p {
     background-color: unset;
 }
 
+.tips {
+    text-decoration: underline;
+}
+
 /* Main */
 .container {
     max-width: 1200px;
