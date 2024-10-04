@@ -225,10 +225,13 @@ async function selectLine(event) {
     const line = mtrLines[lineName] // line object
     const directions = ['up', 'down']
 
+    document.querySelector('.line.active')?.classList.remove('active')
+    lineElem.classList.add('active')
+    
     /* clear all data first */
     document.querySelector('.trains-container').textContent = null
-    // document.querySelectorAll('.title').forEach(elem => elem.textContent = null)
-    // document.querySelectorAll('.trains').forEach(elem => elem.textContent = null)
+    // show loading
+    document.querySelector('.loading').classList.remove('hide')
 
     /* step 1: fetch all data from api */
     const fetchTasks = line.sta.map(async ({ code, name }) => {
@@ -257,6 +260,9 @@ async function selectLine(event) {
     fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time))
 
     /* step 3: render data to UI */
+    // remove loading
+    document.querySelector('.loading').classList.add('hide')
+
     // create content element
     directions.forEach(direction => {
         const elem = cloneFromTemplate('template-trains-direction')
