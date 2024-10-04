@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='main.css'>
+    <title>MTR</title>
+</head>
+<body>
+    <section class='container'>
+        <div class='lines'></div>
+        <p class='last-updated-time'>你想去邊先?</p>
+        <div class='trains-container'></div>
+        
+        <!-- template use for clone -->
+        <template id='template-line'>
+            <div class='line' data-line-name=''>
+                <span></span>
+            </div>
+        </template>
+
+        <template id='template-trains-direction'>
+            <div class='trains-direction' data-direction=''>
+                <p class='title'></p>
+                <div class='trains'></div>
+            </div>
+        </template>
+
+        <template id='template-train'>
+            <div class='train'>
+                <p class='name'></p>
+                <p class='destination'>終點站: <span></span></p>
+                <p class='time'>下班列車: <span></span></p>
+                <p class='platform'>月台: <span></span></p>
+            </div>
+        </template>
+    </section>
+</body>
+<script src='main.js'></script>
+</html>

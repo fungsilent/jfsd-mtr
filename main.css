@@ -1,0 +1,129 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+body {
+    background-color: #f3f3f3;
+}
+p {
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.lines {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px 60px;
+}
+.line {
+    --color: '';
+    border: 1px solid var(--color);
+    border-radius: 4px;
+    padding: 16px 30px;
+    color: #fff;
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+}
+.line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    height: 4px;
+    transform: translateX(-50%);
+    background-color: var(--color);
+    transition: .1s;
+}
+.line:hover,
+.line.active {
+    color: var(--color);
+    background-color: var(--color);
+}
+.line:hover:after,
+.line.active::after {
+    width: calc(100% - 10px);
+    border-radius: 4px;
+    bottom: 2px;
+    background-color: #fff;
+}
+.line span {
+    font-weight: bold;
+    filter: grayscale(1) contrast(999) invert(1);
+}
+
+.last-update-time {
+    border-bottom: 1px solid #fff;
+    border-radius: 4px;
+}
+
+.trains-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.trains-direction {
+    --color: #c7c7c7;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+    background-color: #fff;
+    border: 1px solid var(--color);
+    border-radius: 6px;
+}
+
+.trains {
+    --colsNum: 4;
+    --gap: 20px;
+    --gapCount: (var(--colsNum) - 1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+}
+.train {
+    --color: '';
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: calc((100% / var(--colsNum)) - (var(--gap) * var(--gapCount) / var(--colsNum)));
+    padding: 16px;
+    border-radius: 4px;
+    color: var(--color);
+    background-color: var(--color);
+}
+.train .name {
+    font-weight: bold;
+}
+.train p {
+    filter: grayscale(1) contrast(999) invert(1);
+}
+@media (max-width: 900px) {
+    .lines {
+        gap: 20px 60px;
+    }
+    .trains {
+        --colsNum: 3;
+        --gap: 15px;
+    }
+}
+@media (max-width: 600px) {
+    .lines {
+        gap: 10px 40px;
+    }
+    .trains {
+        --colsNum: 2;
+        --gap: 10px;
+    }
+}
