@@ -224,13 +224,14 @@ async function selectLine(event) {
     const lineName = lineElem.dataset.lineName  // get data-line-name value
     const line = mtrLines[lineName] // line object
     const directions = ['up', 'down']
+    const cleanFloor = () => document.querySelector('.trains-container').textContent = null
 
     document.querySelector('.line.active')?.classList.remove('active')
     lineElem.classList.add('active')
     
-    /* clear all data first */
-    document.querySelector('.trains-container').textContent = null
-    // show loading
+    /* clean floor first */
+    // clean for show loading
+    cleanFloor()
     document.querySelector('.loading').classList.remove('hide')
 
     /* step 1: fetch all data from api */
@@ -260,6 +261,8 @@ async function selectLine(event) {
     fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time))
 
     /* step 3: render data to UI */
+    // clean again to make sure the floor dont be affected by the last API
+    cleanFloor()
     // remove loading
     document.querySelector('.loading').classList.add('hide')
 
