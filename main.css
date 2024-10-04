@@ -16,6 +16,32 @@ p {
     display: none;
 }
 
+.notice {
+    padding: 16px 32px;
+    background-color: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 4px;
+    color: #5c5c5c;
+}
+.notice::before {
+    content: '!';
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    font-weight: 900;
+    border-radius: 50%;
+    color: #fff;
+    background-color: #454545;
+    margin-right: 12px;
+}
+.notice.back::before {
+    content: '👋🏻';
+    background-color: unset;
+}
+
+/* Main */
 .container {
     max-width: 1200px;
     margin: auto;

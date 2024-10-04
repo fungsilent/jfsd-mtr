@@ -48,9 +48,10 @@ main()
 /* 同步 fetch API */
 async function synchronous() {
     const lineCode = 'TML'
-    let fetchData = []
 
+    let fetchData = []
     const stations = mtrLines[lineCode].sta
+    
     for (const index in stations) {
         const station = stations[index]
         const data = await fetchApiData(lineCode, station.code)
@@ -65,6 +66,7 @@ async function synchronous() {
 /* 異步 fetch API */
 async function asynchronous() {
     const lineCode = 'TML'
+
     const fetchTasks = mtrLines[lineCode].sta.map(async ({ code, name }) => {
         const data = await fetchApiData(lineCode, code)
         return {
@@ -79,11 +81,19 @@ async function asynchronous() {
 function main() {
     // synchronous
     document.querySelector('[data-method="synchronous"]').addEventListener('click', event => {
+        // show github code
+        document.querySelector('[data-type="asynchronous"]').classList.add('hide')
+        document.querySelector('[data-type="synchronous"]').classList.remove('hide')
+
         selectLine(event, synchronous)
     })
 
     // asynchronous
     document.querySelector('[data-method="asynchronous"]').addEventListener('click', event => {
+        // show github code
+        document.querySelector('[data-type="synchronous"]').classList.add('hide')
+        document.querySelector('[data-type="asynchronous"]').classList.remove('hide')
+
         selectLine(event, asynchronous)
     })
 }
