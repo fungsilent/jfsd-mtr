@@ -1,29 +1,33 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' href='main.css'>
     <link rel='preconnect' href='https://fonts.googleapis.com'>
     <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
     <link href='https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap' rel='stylesheet'>
-    <title>MTR</title>
+    <title>Explanation</title>
 </head>
 <body>
     <section class='container'>
-        <a href='explanation.html'>Call API 要訣</a>
-        <div class='lines'></div>
+        <a href='index.html'>Back</a>
+        <div class='lines'>
+            <div class='line' data-line-code='TML' data-method='synchronous' style="--color: #8d6019;">
+                <span>屯馬線 (同步拎Data)</span>
+            </div>
+            <div class='line' data-line-code='TML' data-method='asynchronous' style="--color: #8d6019;">
+                <span>屯馬線 (異步拎Data)</span>
+            </div>
+        </div>
         <p class='last-updated-time'>你想去邊先?</p>
+        <p class='time-used'>拎Data用了: <span>-</span> ms</p>
         <p class='loading hide'>Loading</p>
+        <div class='trains-container'></div>
+
         <div class='trains-container'></div>
         
         <!-- template use for clone -->
-        <template id='template-line'>
-            <div class='line' data-line-code=''>
-                <span></span>
-            </div>
-        </template>
-
         <template id='template-trains-direction'>
             <div class='trains-direction' data-direction=''>
                 <p class='title'></p>
@@ -41,6 +45,6 @@
         </template>
     </section>
     
-    <script src='main.js'></script>
+    <script src='explanation.js'></script>
 </body>
 </html>

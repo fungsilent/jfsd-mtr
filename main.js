@@ -204,15 +204,15 @@ renderLines()
 function renderLines() {
     const area = document.querySelector('.lines')
 
-    for (const lineName in mtrLines) {
-        const line = mtrLines[lineName] // line object
+    for (const lineCode in mtrLines) {
+        const line = mtrLines[lineCode] // line object
 
         const elem = cloneFromTemplate('template-line')
 
         // set value
         elem.querySelector('span').textContent = line.text
         elem.style.setProperty('--color', line.color)
-        elem.dataset.lineName = lineName    // set data-line-name value
+        elem.dataset.lineCode = lineCode    // set data-line-name value
         elem.addEventListener('click', selectLine)
 
         area.appendChild(elem, null)
@@ -221,8 +221,8 @@ function renderLines() {
 
 async function selectLine(event) {
     const lineElem = event.currentTarget
-    const lineName = lineElem.dataset.lineName  // get data-line-name value
-    const line = mtrLines[lineName] // line object
+    const lineCode = lineElem.dataset.lineCode  // get data-line-name value
+    const line = mtrLines[lineCode] // line object
     const directions = ['up', 'down']
     const cleanFloor = () => document.querySelector('.trains-container').textContent = null
 
@@ -236,7 +236,7 @@ async function selectLine(event) {
 
     /* step 1: fetch all data from api */
     const fetchTasks = line.sta.map(async ({ code, name }) => {
-        const data = await fetchApiData(lineName, code)
+        const data = await fetchApiData(lineCode, code)
         return {
             ...data,
             name,
@@ -273,7 +273,7 @@ async function selectLine(event) {
         elem.style.setProperty('--color', line.color)
 
         // set title
-        const destinations = line[direction].map(station => getStationName(lineName, station))
+        const destinations = line[direction].map(station => getStationName(lineCode, station))
         elem.querySelector(`.title`).textContent = `往 ${destinations.join(' / ')} 方向`
 
         document.querySelector('.trains-container').appendChild(elem, null)
@@ -283,15 +283,15 @@ async function selectLine(event) {
     document.querySelector('.last-updated-time').textContent = `最後更新時間: ${fetchData[0].curr_time}`
 
     // render train info
-    dataset.forEach(data => renderTrain(data, lineName, line.color))
+    dataset.forEach(data => renderTrain(data, lineCode, line.color))
 }
 
-function renderTrain(data, lineName, color) {
+function renderTrain(data, lineCode, color) {
     const elem = cloneFromTemplate('template-train')
 
     elem.style.setProperty('--color', color)
     elem.querySelector('.name').textContent = data.name
-    elem.querySelector('.destination span').textContent = getStationName(lineName, data.dest)
+    elem.querySelector('.destination span').textContent = getStationName(lineCode, data.dest)
     elem.querySelector('.platform span').textContent = data.plat
 
     const time = new Date(data.time)
