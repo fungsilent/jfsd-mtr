@@ -43,6 +43,7 @@ const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php'
 /*
  * Function
 */
+let eventTimestamp = null
 main()
 
 /* 同步 fetch API */
@@ -85,7 +86,8 @@ function main() {
         document.querySelector('[data-type="asynchronous"]').classList.add('hide')
         document.querySelector('[data-type="synchronous"]').classList.remove('hide')
 
-        selectLine(event, synchronous)
+        eventTimestamp = Date.now()
+        selectLine(event, timestamp, synchronous)
     })
 
     // asynchronous
@@ -94,11 +96,12 @@ function main() {
         document.querySelector('[data-type="synchronous"]').classList.add('hide')
         document.querySelector('[data-type="asynchronous"]').classList.remove('hide')
 
-        selectLine(event, asynchronous)
+        eventTimestamp = Date.now()
+        selectLine(event, timestamp, asynchronous)
     })
 }
 
-async function selectLine(event, fetchApiFunc) {
+async function selectLine(event, timestamp, fetchApiFunc) {
     document.querySelector('.tips').classList.remove('hide')
 
     const lineElem = event.currentTarget
@@ -122,6 +125,9 @@ async function selectLine(event, fetchApiFunc) {
 
     const timeDifferent = (tEnd - tStart)
     document.querySelector(`.time-used span`).textContent = timeDifferent
+
+    // make sure that event is the latest
+    if (eventTimestamp !== timestamp) return 
 
     /* step 2: format data */
     const dataset = []

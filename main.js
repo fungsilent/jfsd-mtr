@@ -199,6 +199,7 @@ const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php'
 /*
  * Function
 */
+let eventTimestamp = null
 renderLines()
 
 function renderLines() {
@@ -213,25 +214,26 @@ function renderLines() {
         elem.querySelector('span').textContent = line.text
         elem.style.setProperty('--color', line.color)
         elem.dataset.lineCode = lineCode    // set data-line-name value
-        elem.addEventListener('click', selectLine)
+        elem.addEventListener('click', event => {
+            eventTimestamp = Date.now()
+            selectLine(event, timestamp)
+        })
 
         area.appendChild(elem, null)
     }
 }
 
-async function selectLine(event) {
+async function selectLine(event, timestamp) {
     const lineElem = event.currentTarget
     const lineCode = lineElem.dataset.lineCode  // get data-line-name value
     const line = mtrLines[lineCode] // line object
     const directions = ['up', 'down']
-    const cleanFloor = () => document.querySelector('.trains-container').textContent = null
 
     document.querySelector('.line.active')?.classList.remove('active')
     lineElem.classList.add('active')
     
     /* clean floor first */
-    // clean for show loading
-    cleanFloor()
+    document.querySelector('.trains-container').textContent = null
     document.querySelector('.loading').classList.remove('hide')
 
     /* step 1: fetch all data from api */
@@ -244,6 +246,9 @@ async function selectLine(event) {
     })
     const fetchData = await Promise.all(fetchTasks)
 
+    // make sure that event is the latest
+    if (eventTimestamp !== timestamp) return 
+    
     /* step 2: format data */
     const dataset = []
     fetchData.forEach(data => {
@@ -261,8 +266,6 @@ async function selectLine(event) {
     fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time))
 
     /* step 3: render data to UI */
-    // clean again to make sure the floor dont be affected by the last API
-    cleanFloor()
     // remove loading
     document.querySelector('.loading').classList.add('hide')
 
@@ -304,7 +307,7 @@ function renderTrain(data, lineCode, color) {
  * Heleper
 */
 function getStationName(line, code) {
-    const matched = mtrLines[line].sta.find(sta => sta.code === code)
+    const matched = mtrLines?.[line].sta.find(sta => sta.code === code)
     return matched?.name || ''
 }
 
