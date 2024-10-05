@@ -216,7 +216,7 @@ function renderLines() {
         elem.dataset.lineCode = lineCode    // set data-line-name value
         elem.addEventListener('click', event => {
             eventTimestamp = Date.now()
-            selectLine(event, timestamp)
+            selectLine(event, eventTimestamp)
         })
 
         area.appendChild(elem, null)

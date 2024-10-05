@@ -87,7 +87,7 @@ function main() {
         document.querySelector('[data-type="synchronous"]').classList.remove('hide')
 
         eventTimestamp = Date.now()
-        selectLine(event, timestamp, synchronous)
+        selectLine(event, eventTimestamp, synchronous)
     })
 
     // asynchronous
@@ -97,7 +97,7 @@ function main() {
         document.querySelector('[data-type="asynchronous"]').classList.remove('hide')
 
         eventTimestamp = Date.now()
-        selectLine(event, timestamp, asynchronous)
+        selectLine(event, eventTimestamp, asynchronous)
     })
 }
 
