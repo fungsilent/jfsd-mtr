@@ -200,6 +200,11 @@ const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php'
  * Function
 */
 let eventTimestamp = null
+let dateFormatter = new Intl.DateTimeFormat('default', {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+})
 renderLines()
 
 function renderLines() {
@@ -296,9 +301,7 @@ function renderTrain(data, lineCode, color) {
     elem.querySelector('.name').textContent = data.name
     elem.querySelector('.destination span').textContent = getStationName(lineCode, data.dest)
     elem.querySelector('.platform span').textContent = data.plat
-
-    const time = new Date(data.time)
-    elem.querySelector('.time span').textContent = `${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}`
+    elem.querySelector('.time span').textContent = dateFormatter.format(new Date(data.time))
 
     document.querySelector(`[data-direction=${data.direction}] .trains`).appendChild(elem, null)
 }
@@ -306,6 +309,11 @@ function renderTrain(data, lineCode, color) {
 /*
  * Heleper
 */
+function cloneFromTemplate(templateId) {
+    const template = document.getElementById(templateId)
+    return template.content.cloneNode(true).children[0]
+}
+
 function getStationName(line, code) {
     const matched = mtrLines[line]?.sta.find(sta => sta.code === code)
     return matched?.name
