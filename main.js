@@ -251,7 +251,8 @@ async function selectLine(event, timestamp) {
     
     /* step 2: format data */
     const dataset = []
-    fetchData.forEach(data => {
+    fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time)).forEach(data => {
+        if (!data) return
         directions.forEach(direction => {
             const key = direction.toUpperCase()
             if (!!data[key]) {
@@ -263,7 +264,6 @@ async function selectLine(event, timestamp) {
             }
         })
     })
-    fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time))
 
     /* step 3: render data to UI */
     // remove loading
@@ -273,7 +273,7 @@ async function selectLine(event, timestamp) {
     directions.forEach(direction => {
         const elem = cloneFromTemplate('template-trains-direction')
         elem.dataset.direction = direction
-        elem.style.setProperty('--color', line.color)
+        elem.style.setProperty('--color', line.color)   
 
         // set title
         const destinations = line[direction].map(station => getStationName(lineCode, station))
@@ -283,7 +283,7 @@ async function selectLine(event, timestamp) {
     })
 
     // set the last updated time
-    document.querySelector('.last-updated-time').textContent = `最後更新時間: ${fetchData[0].curr_time}`
+    document.querySelector('.last-updated-time').textContent = `最後更新時間: ${fetchData[0]?.curr_time || ''}`
 
     // render train info
     dataset.forEach(data => renderTrain(data, lineCode, line.color))
@@ -307,8 +307,8 @@ function renderTrain(data, lineCode, color) {
  * Heleper
 */
 function getStationName(line, code) {
-    const matched = mtrLines?.[line].sta.find(sta => sta.code === code)
-    return matched?.name || ''
+    const matched = mtrLines[line]?.sta.find(sta => sta.code === code)
+    return matched?.name
 }
 
 function cloneFromTemplate(templateId) {
@@ -321,7 +321,7 @@ async function fetchApiData(line, station) {
         const endpoint = `${apiUrl}?line=${line}&sta=${station}`
         let response = await fetch(endpoint)
         response = await response.json()
-        if (response.status == 0) {
+        if (response.status === 0) {
             // handle 429 or other not successful
             console.log('fetch error:', { line, station })
             return null
