@@ -309,11 +309,6 @@ function renderTrain(data, lineCode, color) {
 /*
  * Heleper
 */
-function cloneFromTemplate(templateId) {
-    const template = document.getElementById(templateId)
-    return template.content.cloneNode(true).children[0]
-}
-
 function getStationName(line, code) {
     const matched = mtrLines[line]?.sta.find(sta => sta.code === code)
     return matched?.name
