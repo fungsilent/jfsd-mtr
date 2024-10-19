@@ -1,6 +1,6 @@
 /*
  * Data
-*/
+ */
 const mtrLines = {
     KTL: {
         text: '觀塘線',
@@ -198,7 +198,7 @@ const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php'
 
 /*
  * Function
-*/
+ */
 let eventTimestamp = null
 let dateFormatter = new Intl.DateTimeFormat('default', {
     hour12: false,
@@ -218,7 +218,7 @@ function renderLines() {
         // set value
         elem.querySelector('span').textContent = line.text
         elem.style.setProperty('--color', line.color)
-        elem.dataset.lineCode = lineCode    // set data-line-name value
+        elem.dataset.lineCode = lineCode // set data-line-name value
         elem.addEventListener('click', event => {
             eventTimestamp = Date.now()
             selectLine(event, eventTimestamp)
@@ -230,13 +230,13 @@ function renderLines() {
 
 async function selectLine(event, timestamp) {
     const lineElem = event.currentTarget
-    const lineCode = lineElem.dataset.lineCode  // get data-line-name value
+    const lineCode = lineElem.dataset.lineCode // get data-line-name value
     const line = mtrLines[lineCode] // line object
     const directions = ['up', 'down']
 
     document.querySelector('.line.active')?.classList.remove('active')
     lineElem.classList.add('active')
-    
+
     /* clean floor first */
     document.querySelector('.trains-container').textContent = null
     document.querySelector('.loading').classList.remove('hide')
@@ -252,23 +252,25 @@ async function selectLine(event, timestamp) {
     const fetchData = await Promise.all(fetchTasks)
 
     // make sure that event is the latest
-    if (eventTimestamp !== timestamp) return 
-    
+    if (eventTimestamp !== timestamp) return
+
     /* step 2: format data */
     const dataset = []
-    fetchData.sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time)).forEach(data => {
-        if (!data) return
-        directions.forEach(direction => {
-            const key = direction.toUpperCase()
-            if (!!data[key]) {
-                dataset.push({
-                    name: data.name,
-                    direction,
-                    ...data[key][0],
-                })
-            }
+    fetchData
+        .sort((a, b) => new Date(b.curr_time) - new Date(a.curr_time))
+        .forEach(data => {
+            if (!data) return
+            directions.forEach(direction => {
+                const key = direction.toUpperCase()
+                if (!!data[key]) {
+                    dataset.push({
+                        name: data.name,
+                        direction,
+                        ...data[key][0],
+                    })
+                }
+            })
         })
-    })
 
     /* step 3: render data to UI */
     // remove loading
@@ -278,17 +280,23 @@ async function selectLine(event, timestamp) {
     directions.forEach(direction => {
         const elem = cloneFromTemplate('template-trains-direction')
         elem.dataset.direction = direction
-        elem.style.setProperty('--color', line.color)   
+        elem.style.setProperty('--color', line.color)
 
         // set title
-        const destinations = line[direction].map(station => getStationName(lineCode, station))
-        elem.querySelector(`.title`).textContent = `往 ${destinations.join(' / ')} 方向`
+        const destinations = line[direction].map(station =>
+            getStationName(lineCode, station)
+        )
+        elem.querySelector(`.title`).textContent = `往 ${destinations.join(
+            ' / '
+        )} 方向`
 
         document.querySelector('.trains-container').appendChild(elem, null)
     })
 
     // set the last updated time
-    document.querySelector('.last-updated-time').textContent = `最後更新時間: ${fetchData[0]?.curr_time || ''}`
+    document.querySelector('.last-updated-time').textContent = `最後更新時間: ${
+        fetchData[0]?.curr_time || ''
+    }`
 
     // render train info
     dataset.forEach(data => renderTrain(data, lineCode, line.color))
@@ -299,16 +307,23 @@ function renderTrain(data, lineCode, color) {
 
     elem.style.setProperty('--color', color)
     elem.querySelector('.name').textContent = data.name
-    elem.querySelector('.destination span').textContent = getStationName(lineCode, data.dest)
+    elem.querySelector('.destination span').textContent = getStationName(
+        lineCode,
+        data.dest
+    )
     elem.querySelector('.platform span').textContent = data.plat
-    elem.querySelector('.time span').textContent = dateFormatter.format(new Date(data.time))
+    elem.querySelector('.time span').textContent = dateFormatter.format(
+        new Date(data.time)
+    )
 
-    document.querySelector(`[data-direction=${data.direction}] .trains`).appendChild(elem, null)
+    document
+        .querySelector(`[data-direction=${data.direction}] .trains`)
+        .appendChild(elem, null)
 }
 
 /*
  * Heleper
-*/
+ */
 function getStationName(line, code) {
     const matched = mtrLines[line]?.sta.find(sta => sta.code === code)
     return matched?.name

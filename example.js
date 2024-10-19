@@ -1,6 +1,6 @@
 /*
  * Data
-*/
+ */
 const mtrLines = {
     TML: {
         text: '屯馬線',
@@ -42,7 +42,7 @@ const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php'
 
 /*
  * Function
-*/
+ */
 let eventTimestamp = null
 main()
 
@@ -52,7 +52,7 @@ async function synchronous() {
 
     let fetchData = []
     const stations = mtrLines[lineCode].sta
-    
+
     for (const index in stations) {
         const station = stations[index]
         const data = await fetchApiData(lineCode, station.code)
@@ -67,52 +67,74 @@ async function synchronous() {
 /* 異步 fetch API */
 async function asynchronous() {
     const lineCode = 'TML'
+    const stations = mtrLines[lineCode].sta
 
-    const fetchTasks = mtrLines[lineCode].sta.map(async ({ code, name }) => {
-        const data = await fetchApiData(lineCode, code)
-        return {
-            ...data,
-            name,
-        }
+    const arr = stations.map(async ({ code, name }) => {
+        // const data = await fetchApiData(lineCode, code)
+        const data = await delay(3000)
+        console.log(code)
+        /* do... */
+        return name
     })
-    const fetchData = await Promise.all(fetchTasks)
+    console.log('arr', arr)
+    const allData = await Promise.all(arr)
+    console.log('after Promise.all', allData)
+
+    // fetch data
+    // await Promise.all(arr)
+    // const fetchData = await Promise.all(fetchTasks)
+
+    return []
     return fetchData
 }
 
 function main() {
     // synchronous
-    document.querySelector('[data-method="synchronous"]').addEventListener('click', event => {
-        // show github code
-        document.querySelector('[data-type="asynchronous"]').classList.add('hide')
-        document.querySelector('[data-type="synchronous"]').classList.remove('hide')
+    document
+        .querySelector('[data-method="synchronous"]')
+        .addEventListener('click', event => {
+            // show github code
+            document
+                .querySelector('[data-type="asynchronous"]')
+                .classList.add('hide')
+            document
+                .querySelector('[data-type="synchronous"]')
+                .classList.remove('hide')
 
-        eventTimestamp = Date.now()
-        selectLine(event, eventTimestamp, synchronous)
-    })
+            eventTimestamp = Date.now()
+            selectLine(event, eventTimestamp, synchronous)
+        })
 
     // asynchronous
-    document.querySelector('[data-method="asynchronous"]').addEventListener('click', event => {
-        // show github code
-        document.querySelector('[data-type="synchronous"]').classList.add('hide')
-        document.querySelector('[data-type="asynchronous"]').classList.remove('hide')
+    document
+        .querySelector('[data-method="asynchronous"]')
+        .addEventListener('click', event => {
+            // show github code
+            document
+                .querySelector('[data-type="synchronous"]')
+                .classList.add('hide')
+            document
+                .querySelector('[data-type="asynchronous"]')
+                .classList.remove('hide')
 
-        eventTimestamp = Date.now()
-        selectLine(event, eventTimestamp, asynchronous)
-    })
+            eventTimestamp = Date.now()
+            selectLine(event, eventTimestamp, asynchronous)
+        })
 }
 
 async function selectLine(event, timestamp, fetchApiFunc) {
     document.querySelector('.tips').classList.remove('hide')
 
     const lineElem = event.currentTarget
-    const lineCode = lineElem.dataset.lineCode  // get data-line-name value
+    const lineCode = lineElem.dataset.lineCode // get data-line-name value
     const line = mtrLines[lineCode] // line object
     const directions = ['up', 'down']
-    const cleanFloor = () => document.querySelector('.trains-container').textContent = null
+    const cleanFloor = () =>
+        (document.querySelector('.trains-container').textContent = null)
 
     document.querySelector('.line.active')?.classList.remove('active')
     lineElem.classList.add('active')
-    
+
     /* clean floor first */
     // clean for show loading
     cleanFloor()
@@ -123,11 +145,11 @@ async function selectLine(event, timestamp, fetchApiFunc) {
     const fetchData = await fetchApiFunc()
     const tEnd = Date.now()
 
-    const timeDifferent = (tEnd - tStart)
+    const timeDifferent = tEnd - tStart
     document.querySelector(`.time-used span`).textContent = timeDifferent
 
     // make sure that event is the latest
-    if (eventTimestamp !== timestamp) return 
+    if (eventTimestamp !== timestamp) return
 
     /* step 2: format data */
     const dataset = []
@@ -158,14 +180,20 @@ async function selectLine(event, timestamp, fetchApiFunc) {
         elem.style.setProperty('--color', line.color)
 
         // set title
-        const destinations = line[direction].map(station => getStationName(lineCode, station))
-        elem.querySelector(`.title`).textContent = `往 ${destinations.join(' / ')} 方向`
+        const destinations = line[direction].map(station =>
+            getStationName(lineCode, station)
+        )
+        elem.querySelector(`.title`).textContent = `往 ${destinations.join(
+            ' / '
+        )} 方向`
 
         document.querySelector('.trains-container').appendChild(elem, null)
     })
 
     // set the last updated time
-    document.querySelector('.last-updated-time').textContent = `最後更新時間: ${fetchData[0].curr_time}`
+    // document.querySelector(
+    //     '.last-updated-time'
+    // ).textContent = `最後更新時間: ${fetchData[0].curr_time}`
 
     // render train info
     dataset.forEach(data => renderTrain(data, lineCode, line.color))
@@ -176,18 +204,25 @@ function renderTrain(data, lineCode, color) {
 
     elem.style.setProperty('--color', color)
     elem.querySelector('.name').textContent = data.name
-    elem.querySelector('.destination span').textContent = getStationName(lineCode, data.dest)
+    elem.querySelector('.destination span').textContent = getStationName(
+        lineCode,
+        data.dest
+    )
     elem.querySelector('.platform span').textContent = data.plat
 
     const time = new Date(data.time)
-    elem.querySelector('.time span').textContent = `${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}`
+    elem.querySelector('.time span').textContent = `${time.getHours()}:${String(
+        time.getMinutes()
+    ).padStart(2, '0')}`
 
-    document.querySelector(`[data-direction=${data.direction}] .trains`).appendChild(elem, null)
+    document
+        .querySelector(`[data-direction=${data.direction}] .trains`)
+        .appendChild(elem, null)
 }
 
 /*
  * Heleper
-*/
+ */
 function getStationName(line, code) {
     const matched = mtrLines[line].sta.find(sta => sta.code === code)
     return matched?.name || ''
@@ -214,3 +249,41 @@ async function fetchApiData(line, station) {
         return null
     }
 }
+
+function delay(time) {
+    return new Promise(resovle => setTimeout(() => resovle(), time))
+    // Class
+}
+
+// Class
+// class Person {
+//     constructor(data) {
+//         this.name = data.name
+//         this.age = data.age
+//     }
+//     setName(newName) {
+//         this.name = newName
+//     }
+//     getName() {
+//         return this.name
+//     }
+// }
+// const person = {
+//     name: null,
+//     setName(newName) {
+//         this.name = newName
+//     },
+//     getName1() {
+//         console.log(this)
+//         return this.name
+//     },
+//     getName2: () => {
+//         console.log(this)
+//         return this.name
+//     },
+// }
+
+// person.setName('joey')
+// console.log('person', person)
+// console.log('getName1', person.getName1())
+// console.log('getName2', person.getName2())
